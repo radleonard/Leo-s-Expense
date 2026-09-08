@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon" type="png" href="logo.png">
+    <title>Personal Expense Tracker</title>
+    <style>
+        :root {
+            --primary: #1d4ed8;
+            /* Blue accent matched to binder */
+            --primary-hover: #1e40af;
+            --text: #0f172a;
+            --muted: #475569;
+            --border: rgba(0, 0, 0, 0.12);
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-serif: 'Georgia', serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px 16px;
+            /* Updated 'center 15% / cover' shifts the view focus to face level instead of zooming in on the waist */
+            background: linear-gradient(rgba(18, 14, 10, 0.45), rgba(18, 14, 10, 0.55)),
+                url('photo.jpg') center 15% / cover no-repeat fixed #1a1512;
+        }
+
+        /* Glass Container tuned for clarity and photo visibility */
+        .container {
+            background: rgba(255, 255, 255, 0.68);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            padding: 24px 20px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+            width: 100%;
+            max-width: 400px;
+            margin-top: 10px;
+        }
+
+        /* Personal Header */
+        .app-header {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .app-logo {
+            font-family: var(--font-serif);
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 2.5px;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+        }
+
+        h2 {
+            font-size: 1.35rem;
+            color: var(--text);
+            font-weight: 800;
+        }
+
+        .subtitle {
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-top: 4px;
+            font-style: italic;
+            font-weight: 600;
+        }
+
+        /* Balance Plaque */
+        .balance-card {
+            background: rgba(255, 255, 255, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .balance-label {
+            font-size: 0.75rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 700;
+        }
+
+        .balance-amount {
+            font-family: var(--font-serif);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-top: 4px;
+        }
+
+        /* Form Inputs */
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--text);
+        }
+
+        /* 16px font-size prevents iOS Safari auto-zoom */
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text);
+            background-color: rgba(255, 255, 255, 0.82);
+            -webkit-appearance: none;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.2);
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .row .form-group {
+            flex: 1;
+        }
+
+        /* Custom Dropdown Arrow */
+        select {
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%230F172A%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095.1c3.6-3.6%205.4-7.8%205.4-12.9%200-5-1.8-9.3-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 10px auto;
+            padding-right: 30px;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(29, 78, 216, 0.3);
+            transition: background-color 0.2s;
+        }
+
+        button:active {
+            background: var(--primary-hover);
+        }
+
+        button:disabled {
+            background: #9ca3af;
+        }
+
+        #status {
+            margin-top: 14px;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        /* Optimization specifically for PC / Desktop screens */
+        @media (min-width: 768px) {
+            body {
+                /* Prevents severe cropping on wide monitors */
+                background-position: center 20%;
+                padding-top: 40px;
+            }
+
+            .container {
+                /* Slightly wider card on desktop for better readability */
+                max-width: 440px;
+                padding: 30px 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Personal Header -->
+        <div class="app-header">
+            <div class="app-logo">MY LEDGER</div>
+            <h2>Personal Expense</h2>
+            <div class="subtitle">Disciplined today, independent tomorrow</div>
+        </div>
+
+        <!-- Balance Plaque -->
+        <div class="balance-card">
+            <div class="balance-label">Current Balance</div>
+            <div id="balanceValue" class="balance-amount">Loading...</div>
+        </div>
+
+        <form id="trackerForm">
+            <div class="row">
+                <div class="form-group">
+                    <label for="date">Date</label>
+                    <input type="date" id="date" required>
+                </div>
+                <div class="form-group">
+                    <label for="time">Time</label>
+                    <input type="time" id="time" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label for="type">Type</label>
+                    <select id="type">
+                        <option value="OUT">Outcome (Rp -)</option>
+                        <option value="IN">Income (Rp +)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category">
+                        <option value="Daily Food">Daily Food</option>
+                        <option value="Commute & Fuel">Commute & Fuel</option>
+                        <option value="Sports & Health">Sports & Health</option>
+                        <option value="Motorcycle">Motorcycle</option>
+                        <option value="Bills & Utilities">Bills & Utilities</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="amount">Amount</label>
+                <input type="text" id="amount" inputmode="numeric" placeholder="0" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" rows="2" placeholder="Optional detail..."></textarea>
+            </div>
+
+            <button type="submit" id="submitBtn">Save Transaction</button>
+        </form>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        // Paste your personal spreadsheet Google Apps Script URL below:
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxLhKZj5hL5D-H8fkbddjtK4CyyMV2tOiGvi125Eqc6mZdYd7yfqQREAcOJkZcsonSRVA/exec";
+        const BALANCE_CELL = "I1";
+        const DEFAULT_TAB_NAME = "Happy"; // Update to match your sheet's tab name
+
+        // Auto-fill current date and time
+        document.addEventListener('DOMContentLoaded', () => {
+            const now = new Date();
+            document.getElementById('date').value = now.toISOString().split('T')[0];
+            document.getElementById('time').value = now.toTimeString().slice(0, 5);
+            fetchBalance();
+        });
+
+        // Formatting input number with thousand separators (12.000)
+        const amountInput = document.getElementById('amount');
+        amountInput.addEventListener('input', (e) => {
+            let rawValue = e.target.value.replace(/\D/g, '');
+            e.target.value = rawValue ? new Intl.NumberFormat('id-ID').format(rawValue) : '';
+        });
+
+        // Fetch Balance from Google Sheet
+        async function fetchBalance() {
+            const balanceEl = document.getElementById('balanceValue');
+            balanceEl.textContent = 'Loading...';
+
+            if (SCRIPT_URL === "YOUR_NEW_APPS_SCRIPT_URL_HERE") {
+                balanceEl.textContent = 'Set Script URL';
+                return;
+            }
+
+            try {
+                const url = `${SCRIPT_URL}?tabName=${encodeURIComponent(DEFAULT_TAB_NAME)}&cell=${BALANCE_CELL}`;
+                const response = await fetch(url);
+
+                const responseText = await response.text();
+                let data;
+
+                try {
+                    data = JSON.parse(responseText);
+                } catch (jsonErr) {
+                    console.error("Non-JSON response received:", responseText);
+                    balanceEl.textContent = 'Error';
+                    return;
+                }
+
+                if (data.status === 'success') {
+                    balanceEl.textContent = data.balance || 'Rp 0';
+                } else {
+                    console.error('Apps Script Error:', data.message);
+                    balanceEl.textContent = 'Tab Not Found';
+                }
+            } catch (err) {
+                console.error('Network Error:', err);
+                balanceEl.textContent = '-';
+            }
+        }
+
+        // Submit Handler
+        let isSubmitting = false;
+        document.getElementById('trackerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (isSubmitting) return;
+            isSubmitting = true;
+
+            const statusDiv = document.getElementById('status');
+            const btn = document.getElementById('submitBtn');
+
+            statusDiv.style.color = '#1d4ed8';
+            statusDiv.textContent = 'Saving...';
+            btn.disabled = true;
+
+            // Convert to number, then negative if type is OUT
+            let rawAmount = Number(document.getElementById('amount').value.replace(/\D/g, '')) || 0;
+            const type = document.getElementById('type').value;
+            if (type === 'OUT' && rawAmount > 0) {
+                rawAmount = -rawAmount;
+            }
+
+            const payload = {
+                tabName: DEFAULT_TAB_NAME,
+                date: document.getElementById('date').value,
+                time: document.getElementById('time').value,
+                type: type,
+                category: document.getElementById('category').value,
+                amount: rawAmount,
+                description: document.getElementById('description').value
+            };
+
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
+                });
+
+                statusDiv.style.color = '#16a34a'; // Green success
+                statusDiv.textContent = 'Transaction saved!';
+                document.getElementById('amount').value = '';
+                document.getElementById('description').value = '';
+
+                // Auto-refresh balance
+                setTimeout(fetchBalance, 1500);
+
+            } catch (err) {
+                statusDiv.style.color = '#dc2626'; // Red error
+                statusDiv.textContent = 'Failed to submit';
+                console.error(err);
+            } finally {
+                setTimeout(() => {
+                    btn.disabled = false;
+                    isSubmitting = false;
+                }, 1500);
+            }
+        });
+    </script>
+
+</body>
+
+</html>
